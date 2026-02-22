@@ -2,89 +2,135 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>KOJ Live Market</title>
+<title>KOJ Labs</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{
-  margin:0;
-  background:linear-gradient(180deg,#060b18,#0b1224);
-  font-family:Arial, sans-serif;
-  color:white;
+margin:0;
+font-family:Inter,Arial;
+background:radial-gradient(circle at top,#0f172a,#020617);
+color:#e5e7eb;
 }
 
 .topbar{
-  padding:20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom:1px solid rgba(0,255,255,0.1);
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px 50px;
+background:#0b1220;
+border-bottom:1px solid #1f2937;
+}
+
+.brand{
+display:flex;
+align-items:center;
+gap:15px;
 }
 
 .logo{
-  font-size:22px;
-  font-weight:bold;
-  color:#00f0ff;
+width:60px;
+border-radius:14px;
+box-shadow:0 0 30px rgba(0,255,255,0.4);
+}
+
+.brand-title{
+font-size:22px;
+font-weight:bold;
+color:#00f0ff;
 }
 
 .status span{
-  margin-left:10px;
-  padding:6px 12px;
-  border-radius:20px;
-  font-size:12px;
+padding:6px 14px;
+border-radius:20px;
+margin-left:10px;
+font-size:12px;
+font-weight:600;
 }
 
-.hot{background:#3a1a1a;color:#ff4d4d;}
-.trend{background:#112a3a;color:#00c8ff;}
-.verified{background:#103a1f;color:#00ff88;}
+.hot{background:#7c2d12;color:#fb923c;}
+.trend{background:#0c4a6e;color:#38bdf8;}
+.verified{background:#064e3b;color:#4ade80;}
 
 .container{
-  display:grid;
-  grid-template-columns:1fr 2fr 1fr;
-  gap:20px;
-  padding:30px;
+display:grid;
+grid-template-columns:2fr 1fr;
+gap:30px;
+padding:40px 50px;
 }
 
 .card{
-  background:#101827;
-  padding:20px;
-  border-radius:15px;
-  box-shadow:0 0 15px rgba(0,255,255,0.1);
+background:#0f172a;
+border:1px solid #1f2937;
+border-radius:20px;
+padding:25px;
+box-shadow:0 0 40px rgba(0,255,255,0.05);
 }
 
-.bigprice{
-  font-size:34px;
-  color:#00ff88;
+.price{
+font-size:48px;
+color:#00ffcc;
+margin:15px 0;
+font-weight:700;
 }
 
-.small{
-  color:#9ca3af;
-  font-size:13px;
-}
-
-.stat{
-  margin-top:15px;
-  padding:10px;
-  background:#0d1422;
-  border-radius:10px;
+.stats div{
+margin-bottom:10px;
+font-size:14px;
 }
 
 .transactions{
-  margin-top:20px;
+max-height:420px;
+overflow-y:auto;
+margin-top:20px;
 }
 
 .tx{
-  padding:10px;
-  margin-top:10px;
-  background:#0d1422;
-  border-radius:10px;
-  font-size:14px;
+display:flex;
+justify-content:space-between;
+background:#111827;
+padding:12px 15px;
+border-radius:12px;
+margin-bottom:10px;
+border-left:4px solid #22c55e;
+animation:fadeIn 0.5s ease-in-out;
 }
 
-.footer{
-  text-align:center;
-  padding:20px;
-  color:#6b7280;
+.buy{color:#22c55e;font-weight:600;}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(5px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+.admin{
+position:fixed;
+bottom:20px;
+right:20px;
+background:#111827;
+padding:20px;
+border-radius:16px;
+box-shadow:0 0 30px #00ffff33;
+display:none;
+}
+
+.admin input{
+width:100%;
+padding:8px;
+margin-bottom:10px;
+background:#0b1220;
+border:1px solid #1f2937;
+color:white;
+}
+
+.admin button{
+width:100%;
+padding:10px;
+background:#00ffcc;
+border:none;
+border-radius:10px;
+font-weight:600;
+cursor:pointer;
 }
 </style>
 </head>
@@ -92,90 +138,130 @@ body{
 <body>
 
 <div class="topbar">
-  <div class="logo">KOJ Labs</div>
-  <div class="status">
-    <span class="hot">HOT</span>
-    <span class="trend">TREND</span>
-    <span class="verified">VERIFIED</span>
-  </div>
+<div class="brand">
+<img src="logo.png" class="logo">
+<div>
+<div class="brand-title">KOJ Labs</div>
+<div style="font-size:12px;color:#6b7280;">Decentralized Community Token</div>
+</div>
+</div>
+
+<div class="status">
+<span class="hot">HOT</span>
+<span class="trend">TREND</span>
+<span class="verified">VERIFIED</span>
+</div>
 </div>
 
 <div class="container">
 
-  <!-- LEFT -->
-  <div class="card">
-    <div class="small">LIVE MARKET</div>
-    <div class="bigprice">$0.0000000</div>
+<div class="card">
+<h2>KOJ / USDT</h2>
+<div class="price" id="price">$0.0000000</div>
+<canvas id="chart"></canvas>
+</div>
 
-    <div class="stat">
-      Total Buys: 0
-    </div>
+<div class="card">
+<h3>Market Stats</h3>
+<div class="stats">
+<div>24h High: <span id="high">$0.0000000</span></div>
+<div>24h Volume: <span id="volume">$0</span></div>
+<div>Total Trades: <span id="trades">0</span></div>
+</div>
 
-    <div class="stat">
-      Total Sells: 0
-    </div>
-
-    <div class="stat">
-      Buy/Sell Ratio: 0% / 0%
-    </div>
-  </div>
-
-  <!-- CENTER -->
-  <div class="card">
-    <h3>KOJ/USDT</h3>
-    <canvas id="chart"></canvas>
-  </div>
-
-  <!-- RIGHT -->
-  <div class="card">
-    <h3>Market Stats</h3>
-
-    <div class="stat">24h High: $0.0000000</div>
-    <div class="stat">24h Low: $0.0000000</div>
-    <div class="stat">24h Volume: $0</div>
-    <div class="stat">Market Trend: Neutral</div>
-    <div class="stat">Total Trades: 0</div>
-
-    <div class="transactions">
-      <h4>Live Transactions</h4>
-
-      <div class="tx">BUY — $0 — 0 KOJ</div>
-      <div class="tx">SELL — $0 — 0 KOJ</div>
-      <div class="tx">BUY — $0 — 0 KOJ</div>
-
-    </div>
-  </div>
+<div class="transactions" id="txList"></div>
+</div>
 
 </div>
 
-<div class="footer">
-  KOJ Token Dashboard
+<div class="admin" id="adminPanel">
+<h4>Admin Control</h4>
+<input id="startPrice" placeholder="Start price">
+<button onclick="startMarket()">Activate Market</button>
 </div>
 
 <script>
-const ctx = document.getElementById('chart');
 
-new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: ['1','2','3','4','5','6','7'],
-    datasets: [{
-      label: 'KOJ Price',
-      data: [0,0,0,0,0,0,0],
-      borderColor: '#00f0ff',
-      backgroundColor: 'rgba(0,240,255,0.15)',
-      fill: true,
-      tension: 0.3
-    }]
-  },
-  options:{
-    plugins:{legend:{display:false}},
-    scales:{
-      x:{display:false},
-      y:{display:false}
-    }
-  }
+let currentPrice=0;
+let high=0;
+let volume=0;
+let trades=0;
+let running=false;
+
+const ctx=document.getElementById('chart').getContext('2d');
+let chartData=[0,0,0,0,0];
+
+const chart=new Chart(ctx,{
+type:'line',
+data:{
+labels:["","","","",""],
+datasets:[{
+data:chartData,
+borderColor:"#00f0ff",
+backgroundColor:"rgba(0,255,255,0.1)",
+fill:true,
+tension:0.4
+}]
+},
+options:{
+plugins:{legend:{display:false}},
+scales:{x:{display:false},y:{display:false}}
+}
 });
+
+function startMarket(){
+let input=parseFloat(document.getElementById("startPrice").value);
+if(input>0){
+currentPrice=input;
+running=true;
+updateMarket();
+}
+}
+
+function updateMarket(){
+if(!running)return;
+
+let growth=currentPrice*(Math.random()*0.015+0.005);
+currentPrice+=growth;
+
+if(currentPrice>high) high=currentPrice;
+
+let buyAmount=(Math.random()*8000+500);
+volume+=buyAmount;
+trades++;
+
+document.getElementById("price").innerText="$"+currentPrice.toFixed(7);
+document.getElementById("high").innerText="$"+high.toFixed(7);
+document.getElementById("volume").innerText="$"+Math.floor(volume);
+document.getElementById("trades").innerText=trades;
+
+chartData.push(currentPrice);
+chartData.shift();
+chart.update();
+
+addTransaction(buyAmount);
+
+let delay=Math.random()*20000+15000;
+setTimeout(updateMarket,delay);
+}
+
+function addTransaction(amount){
+let tx=document.createElement("div");
+tx.className="tx";
+tx.innerHTML=`
+<span class="buy">BUY</span>
+<span>$${amount.toFixed(2)}</span>
+`;
+document.getElementById("txList").prepend(tx);
+}
+
+document.addEventListener("keydown",function(e){
+if(e.key==="k"){
+let panel=document.getElementById("adminPanel");
+panel.style.display=panel.style.display==="none"?"block":"none";
+}
+});
+
 </script>
 
 </body>
