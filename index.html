@@ -2,42 +2,146 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>KOJ Token</title>
+<title>KOJ</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-body { background:#0f172a; color:white; font-family:Arial; text-align:center; }
-.card { background:#1e293b; padding:20px; margin:20px auto; width:400px; border-radius:10px; }
-h1 { color:#22d3ee; }
+body{
+  margin:0;
+  background:#0b0f1a;
+  font-family:Arial, sans-serif;
+  color:white;
+}
+
+.topbar{
+  background:#111827;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo{
+  font-size:22px;
+  font-weight:bold;
+  color:#00f0ff;
+}
+
+.price{
+  font-size:20px;
+  color:#00ff88;
+}
+
+.container{
+  padding:20px;
+  max-width:1200px;
+  margin:auto;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+  gap:15px;
+  margin-bottom:30px;
+}
+
+.card{
+  background:#141a2a;
+  padding:20px;
+  border-radius:10px;
+  text-align:center;
+}
+
+.card h3{
+  margin:0;
+  font-size:14px;
+  color:#9ca3af;
+}
+
+.card p{
+  font-size:18px;
+  margin:8px 0 0 0;
+}
+
+.chart-box{
+  background:#141a2a;
+  padding:20px;
+  border-radius:10px;
+}
+
+.footer{
+  text-align:center;
+  padding:20px;
+  color:#6b7280;
+}
 </style>
 </head>
+
 <body>
 
-<h1>KOJ</h1>
-
-<div class="card">
-<h2>Price: 0 TON</h2>
-<p>24h Change: 0%</p>
-<p>Market Cap: 0</p>
-<p>Volume: 0</p>
-<p>Total Supply: 0</p>
+<div class="topbar">
+  <div class="logo">KOJ</div>
+  <div class="price">0.0000000 TON</div>
 </div>
 
-<div style="width:600px; margin:auto;">
-<canvas id="chart"></canvas>
+<div class="container">
+
+  <div class="cards">
+    <div class="card">
+      <h3>Market Cap</h3>
+      <p>0 TON</p>
+    </div>
+
+    <div class="card">
+      <h3>24h Volume</h3>
+      <p>0 TON</p>
+    </div>
+
+    <div class="card">
+      <h3>24h Change</h3>
+      <p>0%</p>
+    </div>
+
+    <div class="card">
+      <h3>Total Supply</h3>
+      <p>0 KOJ</p>
+    </div>
+  </div>
+
+  <div class="chart-box">
+    <canvas id="chart"></canvas>
+  </div>
+
+</div>
+
+<div class="footer">
+  KOJ Token Dashboard
 </div>
 
 <script>
 const ctx = document.getElementById('chart');
+
 new Chart(ctx, {
-type: 'line',
-data: {
-labels: ['1','2','3','4','5'],
-datasets: [{
-label: 'KOJ Price',
-data: [0,0,0,0,0],
-borderColor: '#22d3ee'
-}]
-}
+  type: 'line',
+  data: {
+    labels: ['1','2','3','4','5','6','7'],
+    datasets: [{
+      label: 'KOJ Price',
+      data: [0,0,0,0,0,0,0],
+      borderColor: '#00f0ff',
+      backgroundColor: 'rgba(0,240,255,0.1)',
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options:{
+    plugins:{
+      legend:{display:false}
+    },
+    scales:{
+      x:{display:false},
+      y:{display:false}
+    }
+  }
 });
 </script>
 
