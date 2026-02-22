@@ -9,7 +9,7 @@
 body{
 margin:0;
 font-family:Inter,Arial;
-background:radial-gradient(circle at top,#0f172a,#020617);
+background:linear-gradient(180deg,#0b1220,#020617);
 color:#e5e7eb;
 }
 
@@ -17,7 +17,7 @@ color:#e5e7eb;
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:20px 50px;
+padding:20px 60px;
 background:#0b1220;
 border-bottom:1px solid #1f2937;
 }
@@ -29,14 +29,14 @@ gap:15px;
 }
 
 .logo{
-width:60px;
-border-radius:14px;
-box-shadow:0 0 30px rgba(0,255,255,0.4);
+width:55px;
+border-radius:12px;
+box-shadow:0 0 30px #00ffff66;
 }
 
 .brand-title{
 font-size:22px;
-font-weight:bold;
+font-weight:700;
 color:#00f0ff;
 }
 
@@ -52,48 +52,50 @@ font-weight:600;
 .trend{background:#0c4a6e;color:#38bdf8;}
 .verified{background:#064e3b;color:#4ade80;}
 
-.container{
+.main{
 display:grid;
-grid-template-columns:2fr 1fr;
+grid-template-columns:2.3fr 1fr;
 gap:30px;
-padding:40px 50px;
+padding:40px 60px;
 }
 
 .card{
 background:#0f172a;
 border:1px solid #1f2937;
 border-radius:20px;
-padding:25px;
-box-shadow:0 0 40px rgba(0,255,255,0.05);
+padding:30px;
+box-shadow:0 0 60px rgba(0,255,255,0.05);
 }
 
 .price{
-font-size:48px;
+font-size:52px;
 color:#00ffcc;
-margin:15px 0;
-font-weight:700;
+font-weight:800;
+margin:20px 0;
 }
 
-.stats div{
-margin-bottom:10px;
-font-size:14px;
+.transactions-section{
+padding:0 60px 60px 60px;
 }
 
 .transactions{
-max-height:420px;
+background:#0f172a;
+border-radius:20px;
+padding:25px;
+border:1px solid #1f2937;
+max-height:400px;
 overflow-y:auto;
-margin-top:20px;
 }
 
 .tx{
 display:flex;
 justify-content:space-between;
+padding:15px;
+margin-bottom:12px;
 background:#111827;
-padding:12px 15px;
 border-radius:12px;
-margin-bottom:10px;
 border-left:4px solid #22c55e;
-animation:fadeIn 0.5s ease-in-out;
+animation:fadeIn 0.4s ease-in;
 }
 
 .buy{color:#22c55e;font-weight:600;}
@@ -103,6 +105,15 @@ from{opacity:0;transform:translateY(5px);}
 to{opacity:1;transform:translateY(0);}
 }
 
+.footer{
+padding:20px 60px;
+border-top:1px solid #1f2937;
+color:#6b7280;
+font-size:13px;
+display:flex;
+justify-content:space-between;
+}
+
 .admin{
 position:fixed;
 bottom:20px;
@@ -110,7 +121,7 @@ right:20px;
 background:#111827;
 padding:20px;
 border-radius:16px;
-box-shadow:0 0 30px #00ffff33;
+box-shadow:0 0 30px #00ffff44;
 display:none;
 }
 
@@ -153,25 +164,33 @@ cursor:pointer;
 </div>
 </div>
 
-<div class="container">
+<div class="main">
 
 <div class="card">
 <h2>KOJ / USDT</h2>
 <div class="price" id="price">$0.0000000</div>
-<canvas id="chart"></canvas>
+<canvas id="chart" height="110"></canvas>
 </div>
 
 <div class="card">
 <h3>Market Stats</h3>
-<div class="stats">
-<div>24h High: <span id="high">$0.0000000</span></div>
-<div>24h Volume: <span id="volume">$0</span></div>
-<div>Total Trades: <span id="trades">0</span></div>
+<p>24h High: <b id="high">$0.0000000</b></p>
+<p>24h Volume: <b id="volume">$0</b></p>
+<p>Total Trades: <b id="trades">0</b></p>
 </div>
 
-<div class="transactions" id="txList"></div>
 </div>
 
+<div class="transactions-section">
+<div class="transactions">
+<h3>Live Transactions</h3>
+<div id="txList"></div>
+</div>
+</div>
+
+<div class="footer">
+<div>KOJ Live • 2026</div>
+<div>Secure Connection • Connected</div>
 </div>
 
 <div class="admin" id="adminPanel">
@@ -181,52 +200,36 @@ cursor:pointer;
 </div>
 
 <script>
-
-let currentPrice=0;
-let high=0;
-let volume=0;
-let trades=0;
-let running=false;
-
+let currentPrice=0,high=0,volume=0,trades=0,running=false;
 const ctx=document.getElementById('chart').getContext('2d');
-let chartData=[0,0,0,0,0];
+let chartData=[0,0,0,0,0,0];
 
 const chart=new Chart(ctx,{
 type:'line',
-data:{
-labels:["","","","",""],
+data:{labels:["","","","","",""],
 datasets:[{
 data:chartData,
 borderColor:"#00f0ff",
 backgroundColor:"rgba(0,255,255,0.1)",
 fill:true,
 tension:0.4
-}]
-},
-options:{
-plugins:{legend:{display:false}},
-scales:{x:{display:false},y:{display:false}}
-}
+}]},
+options:{plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}
 });
 
 function startMarket(){
 let input=parseFloat(document.getElementById("startPrice").value);
-if(input>0){
-currentPrice=input;
-running=true;
-updateMarket();
-}
+if(input>0){currentPrice=input;running=true;update();}
 }
 
-function updateMarket(){
+function update(){
 if(!running)return;
 
-let growth=currentPrice*(Math.random()*0.015+0.005);
+let growth=currentPrice*(Math.random()*0.02+0.005);
 currentPrice+=growth;
-
 if(currentPrice>high) high=currentPrice;
 
-let buyAmount=(Math.random()*8000+500);
+let buyAmount=(Math.random()*9000+500);
 volume+=buyAmount;
 trades++;
 
@@ -239,29 +242,24 @@ chartData.push(currentPrice);
 chartData.shift();
 chart.update();
 
-addTransaction(buyAmount);
+addTx(buyAmount);
 
-let delay=Math.random()*20000+15000;
-setTimeout(updateMarket,delay);
+setTimeout(update,Math.random()*15000+10000);
 }
 
-function addTransaction(amount){
+function addTx(amount){
 let tx=document.createElement("div");
 tx.className="tx";
-tx.innerHTML=`
-<span class="buy">BUY</span>
-<span>$${amount.toFixed(2)}</span>
-`;
+tx.innerHTML=`<span class="buy">BUY</span><span>$${amount.toFixed(2)}</span>`;
 document.getElementById("txList").prepend(tx);
 }
 
-document.addEventListener("keydown",function(e){
+document.addEventListener("keydown",e=>{
 if(e.key==="k"){
 let panel=document.getElementById("adminPanel");
 panel.style.display=panel.style.display==="none"?"block":"none";
 }
 });
-
 </script>
 
 </body>
