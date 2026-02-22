@@ -1,265 +1,229 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KOJ Labs</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{
-margin:0;
-font-family:Inter,Arial;
-background:linear-gradient(180deg,#0b1220,#020617);
-color:#e5e7eb;
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background: radial-gradient(circle at top,#0c1624,#050b15 60%);
+    color:white;
 }
-
-.topbar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:20px 60px;
-background:#0b1220;
-border-bottom:1px solid #1f2937;
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 40px;
+    background:#08111d;
+    border-bottom:1px solid #0f2a44;
 }
-
-.brand{
-display:flex;
-align-items:center;
-gap:15px;
-}
-
 .logo{
-width:55px;
-border-radius:12px;
-box-shadow:0 0 30px #00ffff66;
+    display:flex;
+    align-items:center;
+    gap:10px;
 }
-
-.brand-title{
-font-size:22px;
-font-weight:700;
-color:#00f0ff;
+.logo img{
+    width:45px;
+    height:45px;
+    border-radius:12px;
 }
-
-.status span{
-padding:6px 14px;
-border-radius:20px;
-margin-left:10px;
-font-size:12px;
-font-weight:600;
+.logo h1{
+    font-size:22px;
+    background:linear-gradient(90deg,#00f0ff,#00ffa3);
+    -webkit-background-clip:text;
+    color:transparent;
 }
-
-.hot{background:#7c2d12;color:#fb923c;}
-.trend{background:#0c4a6e;color:#38bdf8;}
-.verified{background:#064e3b;color:#4ade80;}
-
-.main{
-display:grid;
-grid-template-columns:2.3fr 1fr;
-gap:30px;
-padding:40px 60px;
+.badges span{
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:12px;
+    margin-left:10px;
 }
+.hot{background:#ff5c0033;color:#ff5c00;}
+.trend{background:#0088ff33;color:#00b3ff;}
+.verified{background:#00ff9d33;color:#00ff9d;}
 
+.container{
+    display:grid;
+    grid-template-columns: 3fr 1fr;
+    gap:20px;
+    padding:40px;
+}
 .card{
-background:#0f172a;
-border:1px solid #1f2937;
-border-radius:20px;
-padding:30px;
-box-shadow:0 0 60px rgba(0,255,255,0.05);
+    background:#0c1726;
+    border-radius:20px;
+    padding:25px;
+    box-shadow:0 0 40px #00f0ff22;
+    border:1px solid #0f2a44;
 }
-
 .price{
-font-size:52px;
-color:#00ffcc;
-font-weight:800;
-margin:20px 0;
+    font-size:42px;
+    color:#00ffa3;
 }
+canvas{margin-top:30px;}
+.stats div{margin:15px 0;font-size:14px;}
+.stats span{color:#00ffa3;}
 
-.transactions-section{
-padding:0 60px 60px 60px;
+.bottom{
+    display:grid;
+    grid-template-columns:1fr 2fr;
+    gap:20px;
+    padding:0 40px 40px 40px;
 }
-
 .transactions{
-background:#0f172a;
-border-radius:20px;
-padding:25px;
-border:1px solid #1f2937;
-max-height:400px;
-overflow-y:auto;
+    max-height:420px;
+    overflow:auto;
 }
-
 .tx{
-display:flex;
-justify-content:space-between;
-padding:15px;
-margin-bottom:12px;
-background:#111827;
-border-radius:12px;
-border-left:4px solid #22c55e;
-animation:fadeIn 0.4s ease-in;
+    background:#091423;
+    padding:15px;
+    margin-bottom:10px;
+    border-radius:12px;
+    border-left:4px solid #00ffa3;
+    animation:fade 0.5s ease;
 }
-
-.buy{color:#22c55e;font-weight:600;}
-
-@keyframes fadeIn{
-from{opacity:0;transform:translateY(5px);}
-to{opacity:1;transform:translateY(0);}
+@keyframes fade{
+    from{opacity:0;transform:translateY(-10px);}
+    to{opacity:1;}
 }
-
 .footer{
-padding:20px 60px;
-border-top:1px solid #1f2937;
-color:#6b7280;
-font-size:13px;
-display:flex;
-justify-content:space-between;
+    text-align:center;
+    padding:20px;
+    background:#08111d;
+    color:#aaa;
+    font-size:13px;
 }
-
-.admin{
-position:fixed;
-bottom:20px;
-right:20px;
-background:#111827;
-padding:20px;
-border-radius:16px;
-box-shadow:0 0 30px #00ffff44;
-display:none;
+button{
+    background:#00ffa3;
+    border:none;
+    padding:10px 15px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
 }
-
-.admin input{
-width:100%;
-padding:8px;
-margin-bottom:10px;
-background:#0b1220;
-border:1px solid #1f2937;
-color:white;
-}
-
-.admin button{
-width:100%;
-padding:10px;
-background:#00ffcc;
-border:none;
-border-radius:10px;
-font-weight:600;
-cursor:pointer;
+input{
+    padding:8px;
+    border-radius:8px;
+    border:none;
+    margin-right:10px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="topbar">
-<div class="brand">
-<img src="logo.png" class="logo">
-<div>
-<div class="brand-title">KOJ Labs</div>
-<div style="font-size:12px;color:#6b7280;">Decentralized Community Token</div>
+<header>
+<div class="logo">
+<img src="logo.jpg">
+<h1>KOJ Labs</h1>
 </div>
-</div>
-
-<div class="status">
+<div class="badges">
 <span class="hot">HOT</span>
 <span class="trend">TREND</span>
 <span class="verified">VERIFIED</span>
 </div>
-</div>
+</header>
 
-<div class="main">
-
+<div class="container">
 <div class="card">
 <h2>KOJ / USDT</h2>
 <div class="price" id="price">$0.0000000</div>
-<canvas id="chart" height="110"></canvas>
+<canvas id="chart"></canvas>
+
+<div style="margin-top:20px;">
+<input type="number" id="startPrice" placeholder="Set Start Price">
+<button onclick="startMarket()">Start Market</button>
+</div>
 </div>
 
-<div class="card">
+<div class="card stats">
 <h3>Market Stats</h3>
-<p>24h High: <b id="high">$0.0000000</b></p>
-<p>24h Volume: <b id="volume">$0</b></p>
-<p>Total Trades: <b id="trades">0</b></p>
+<div>24h High: <span id="high">$0</span></div>
+<div>24h Volume: <span id="volume">$0</span></div>
+<div>Total Trades: <span id="trades">0</span></div>
+</div>
 </div>
 
+<div class="bottom">
+<div class="card">
+<h3>KOJ Protocol</h3>
+<div>Genesis Price: $0.0000000</div>
+<div>Security: Locked</div>
+<div>Core: Adaptive Engine</div>
 </div>
 
-<div class="transactions-section">
-<div class="transactions">
+<div class="card transactions" id="transactions">
 <h3>Live Transactions</h3>
-<div id="txList"></div>
 </div>
 </div>
 
 <div class="footer">
-<div>KOJ Live • 2026</div>
-<div>Secure Connection • Connected</div>
-</div>
-
-<div class="admin" id="adminPanel">
-<h4>Admin Control</h4>
-<input id="startPrice" placeholder="Start price">
-<button onclick="startMarket()">Activate Market</button>
+KOJ Live • Secure Connection • Connected
 </div>
 
 <script>
-let currentPrice=0,high=0,volume=0,trades=0,running=false;
-const ctx=document.getElementById('chart').getContext('2d');
-let chartData=[0,0,0,0,0,0];
+let price = 0;
+let high = 0;
+let volume = 0;
+let trades = 0;
+let started = false;
 
-const chart=new Chart(ctx,{
-type:'line',
-data:{labels:["","","","","",""],
-datasets:[{
-data:chartData,
-borderColor:"#00f0ff",
-backgroundColor:"rgba(0,255,255,0.1)",
-fill:true,
-tension:0.4
-}]},
-options:{plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}
+const ctx = document.getElementById('chart').getContext('2d');
+const chart = new Chart(ctx,{
+    type:'line',
+    data:{
+        labels:[],
+        datasets:[{
+            data:[],
+            borderColor:'#00ffa3',
+            backgroundColor:'rgba(0,255,163,0.1)',
+            tension:0.3
+        }]
+    },
+    options:{
+        scales:{x:{display:false},y:{display:false}},
+        plugins:{legend:{display:false}}
+    }
 });
 
 function startMarket(){
-let input=parseFloat(document.getElementById("startPrice").value);
-if(input>0){currentPrice=input;running=true;update();}
+    if(started) return;
+    price = parseFloat(document.getElementById('startPrice').value);
+    if(!price || price<=0) return;
+    started = true;
+    document.getElementById('price').innerText = "$"+price.toFixed(7);
+    high = price;
+    setInterval(simulateTrade,3000);
 }
 
-function update(){
-if(!running)return;
+function simulateTrade(){
+    let buyAmount = (Math.random()*5000+100).toFixed(2);
+    let change = price * (Math.random()*0.02);
+    price += change;
+    volume += parseFloat(buyAmount);
+    trades++;
 
-let growth=currentPrice*(Math.random()*0.02+0.005);
-currentPrice+=growth;
-if(currentPrice>high) high=currentPrice;
+    if(price>high) high = price;
 
-let buyAmount=(Math.random()*9000+500);
-volume+=buyAmount;
-trades++;
+    document.getElementById('price').innerText="$"+price.toFixed(7);
+    document.getElementById('high').innerText="$"+high.toFixed(7);
+    document.getElementById('volume').innerText="$"+volume.toFixed(2);
+    document.getElementById('trades').innerText=trades;
 
-document.getElementById("price").innerText="$"+currentPrice.toFixed(7);
-document.getElementById("high").innerText="$"+high.toFixed(7);
-document.getElementById("volume").innerText="$"+Math.floor(volume);
-document.getElementById("trades").innerText=trades;
+    chart.data.labels.push('');
+    chart.data.datasets[0].data.push(price);
+    chart.update();
 
-chartData.push(currentPrice);
-chartData.shift();
-chart.update();
-
-addTx(buyAmount);
-
-setTimeout(update,Math.random()*15000+10000);
+    let txDiv=document.createElement('div');
+    txDiv.className="tx";
+    txDiv.innerHTML="<b>BUY</b> $"+buyAmount+"<br>Price: $"+price.toFixed(7);
+    document.getElementById('transactions').prepend(txDiv);
 }
-
-function addTx(amount){
-let tx=document.createElement("div");
-tx.className="tx";
-tx.innerHTML=`<span class="buy">BUY</span><span>$${amount.toFixed(2)}</span>`;
-document.getElementById("txList").prepend(tx);
-}
-
-document.addEventListener("keydown",e=>{
-if(e.key==="k"){
-let panel=document.getElementById("adminPanel");
-panel.style.display=panel.style.display==="none"?"block":"none";
-}
-});
 </script>
 
 </body>
